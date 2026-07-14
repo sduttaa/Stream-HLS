@@ -1,0 +1,36 @@
+name: Open-source DSE
+
+on:
+  push:
+    paths:
+      - ".github/workflows/dse.yml"
+      - "requirements.txt"
+      - "docs/open-source-dse.md"
+      - "tools/streamhls-dse/**"
+      - "test/python/**"
+  pull_request:
+    paths:
+      - ".github/workflows/dse.yml"
+      - "requirements.txt"
+      - "docs/open-source-dse.md"
+      - "tools/streamhls-dse/**"
+      - "test/python/**"
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+      # OR-Tools 9.14 remains compatible with the repository's NumPy 1.26 pin.
+      - run: python -m pip install numpy==1.26.0 ortools==9.14.6206
+      - run: python -m unittest discover -s test/python -p 'test_*.py' -v
+      - run: python -m py_compile tools/streamhls-dse/streamhls_dse.py tools/streamhls-dse/streamhls-dse
+      - run: python -m json.tool tools/streamhls-dse/dse_problem_v1.schema.json >/dev/null
