@@ -1,3 +1,4 @@
 numpy==1.26.0
+ortools==9.14.6206
 torch @ https://github.com/llvm/torch-mlir/releases/download/snapshot-20240127.1096/torch-2.3.0.dev20240122+cpu-cp311-cp311-linux_x86_64.whl
 torch-mlir @ https://github.com/llvm/torch-mlir/releases/download/snapshot-20240127.1096/torch_mlir-20240127.1096-cp311-cp311-linux_x86_64.whl

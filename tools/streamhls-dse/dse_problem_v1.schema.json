@@ -1,0 +1,170 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://stream-hls.org/schema/dse_problem_v1.schema.json",
+  "title": "Stream-HLS DseProblemV1",
+  "type": "object",
+  "required": ["schema_version", "resource_limits", "nodes", "edges"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "problem_id": {"type": ["string", "null"]},
+    "time_limit_seconds": {"type": "integer", "minimum": 1},
+    "random_seed": {"type": "integer", "minimum": 0},
+    "num_workers": {"type": "integer", "minimum": 1},
+    "objective": {
+      "type": "object",
+      "properties": {
+        "mode": {
+          "enum": [
+            "latency",
+            "lexicographic_latency_resource_pressure"
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "resource_limits": {"$ref": "#/$defs/resource_vector"},
+    "nodes": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "#/$defs/node"}
+    },
+    "edges": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/edge"}
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "resource_vector": {
+      "type": "object",
+      "propertyNames": {"minLength": 1},
+      "additionalProperties": {"type": "integer", "minimum": 0}
+    },
+    "rate": {
+      "type": "object",
+      "required": ["tokens", "cycles"],
+      "properties": {
+        "tokens": {"type": "integer", "minimum": 1},
+        "cycles": {"type": "integer", "minimum": 1}
+      },
+      "additionalProperties": false
+    },
+    "interface": {
+      "type": "object",
+      "required": ["class"],
+      "properties": {
+        "class": {"type": "string", "minLength": 1},
+        "shape": {
+          "type": "array",
+          "items": {"type": "integer", "minimum": 1}
+        },
+        "layout": {"type": "string", "minLength": 1},
+        "token_order": {"type": "string", "minLength": 1},
+        "rate": {"$ref": "#/$defs/rate"}
+      },
+      "additionalProperties": true
+    },
+    "interface_map": {
+      "type": "object",
+      "additionalProperties": {"$ref": "#/$defs/interface"}
+    },
+    "timing": {
+      "type": "object",
+      "required": ["first_output", "last_output", "input_tail"],
+      "properties": {
+        "first_output": {"type": "integer", "minimum": 0},
+        "last_output": {"type": "integer", "minimum": 0},
+        "initiation_interval": {"type": "integer", "minimum": 1},
+        "input_tail": {
+          "type": "object",
+          "additionalProperties": {"type": "integer", "minimum": 0}
+        }
+      },
+      "additionalProperties": false
+    },
+    "candidate": {
+      "type": "object",
+      "required": ["id", "timing", "resources", "interfaces"],
+      "properties": {
+        "id": {"type": "integer", "minimum": 0},
+        "schedule": {"type": "object"},
+        "timing": {"$ref": "#/$defs/timing"},
+        "resources": {"$ref": "#/$defs/resource_vector"},
+        "interfaces": {
+          "type": "object",
+          "required": ["inputs", "outputs"],
+          "properties": {
+            "inputs": {"$ref": "#/$defs/interface_map"},
+            "outputs": {"$ref": "#/$defs/interface_map"}
+          },
+          "additionalProperties": false
+        },
+        "metadata": {"type": "object"}
+      },
+      "additionalProperties": false
+    },
+    "node": {
+      "type": "object",
+      "required": ["id", "candidates"],
+      "properties": {
+        "id": {"type": "integer", "minimum": 0},
+        "name": {"type": "string"},
+        "candidates": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"$ref": "#/$defs/candidate"}
+        }
+      },
+      "additionalProperties": false
+    },
+    "compatibility_pair": {
+      "type": "array",
+      "prefixItems": [
+        {"type": "string", "minLength": 1},
+        {"type": "string", "minLength": 1}
+      ],
+      "minItems": 2,
+      "maxItems": 2
+    },
+    "mode": {
+      "type": "object",
+      "required": [
+        "id",
+        "kind",
+        "start_event",
+        "couple_completion",
+        "compatibility"
+      ],
+      "properties": {
+        "id": {"type": "string", "minLength": 1},
+        "kind": {"enum": ["stream", "buffer", "adapter"]},
+        "start_event": {"enum": ["first_output", "last_output"]},
+        "couple_completion": {"type": "boolean"},
+        "latency": {"type": "integer", "minimum": 0},
+        "resources": {"$ref": "#/$defs/resource_vector"},
+        "compatibility": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"$ref": "#/$defs/compatibility_pair"}
+        },
+        "metadata": {"type": "object"}
+      },
+      "additionalProperties": false
+    },
+    "edge": {
+      "type": "object",
+      "required": ["id", "source", "target", "modes"],
+      "properties": {
+        "id": {"type": "string", "minLength": 1},
+        "source": {"type": "integer", "minimum": 0},
+        "target": {"type": "integer", "minimum": 0},
+        "modes": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"$ref": "#/$defs/mode"}
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

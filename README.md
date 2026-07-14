@@ -48,6 +48,13 @@ cmake --build . --target check-mlir
 #### 2- Ampl and Gurobi Solvers
 Install the free version of [Ampl in academia](https://ampl.com/ampl-in-academia/) which is shipped with Gurobi.
 
+> **Open-source DSE migration:** the repository now contains an experimental,
+> license-free OR-Tools CP-SAT boundary for composing schedule candidates and
+> communication modes. The existing end-to-end pipeline continues to use
+> AMPL/Gurobi until compiler integration and benchmark parity are complete. See
+> [`docs/open-source-dse.md`](./docs/open-source-dse.md) for the schema, status
+> contract, and migration plan.
+
 ### Stream-HLS Installation
 
 After building the MLIR/LLVM project, please run:
@@ -85,4 +92,4 @@ Please refer to our FPGA'25 paper for more details. If you use Stream-HLS in you
 
 
 ## Acknowledgement
-Some parts of Stream-HLS were modified, extended, and/or borrowed from [ScaleHLS](https://github.com/UIUC-ChenLab/scalehls). 
+Some parts of Stream-HLS were modified, extended, and/or borrowed from [ScaleHLS](https://github.com/UIUC-ChenLab/scalehls).
